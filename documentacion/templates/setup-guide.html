@@ -1,0 +1,62 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title></title></head><body><h2>RPI setup</h2>
+<h2>Index</h2>
+<ul>
+<li><a href="#lcdhdmisetup">7&quot; LCD HDMI Setup</a></li>
+<li><a href="#pythonpackages">Python packages</a></li>
+<li><a href="#pythonscriptatstartup">Python Script at Startup</a></li>
+<li><a href="#markdowneditor">Markdown Editor</a></li>
+<li><a href="#hc12">Wireless HC12 modules</a></li>
+</ul>
+<div style="background-color:#98fc92">  
+<h3>7&quot; LCD HDMI Display setup <a name="lcdhdmisetup"></a></h3>
+<pre><code>git clone https://github.com/goodtft/LCD-show.git
+chmod -R 755 LCD-show
+cd LCD-show
+sudo ./LCD7C-show
+</code></pre>
+</div>  
+<div style="background-color:#92a4fc">  
+<h3>Python packages <a name="pythonpackages"></a></h3>
+<pre><code>Adafruit-SSD1306
+pandas
+scikit-learn
+xgboost
+tensorflow
+curses
+numpy
+gpiozero
+bme280pi
+apscheduler
+Flask
+dash
+psutil
+</code></pre>
+</div>
+<div style="background-color:#98fc92">  
+<h3>Python Script at Startup <a name="pythonscriptatstartup"></a></h3>
+<pre><code>crontab -e
+</code></pre>
+<p>Select editor and add line.</p>
+<pre><code>@reboot python /path/to/script.py &amp;
+</code></pre>
+</div>
+<div style="background-color:#92a4fc">  
+<h3>Markdown editor <a name="markdowneditor"></a></h3>
+<pre><code>sudo apt update
+sudo apt install ghostwriter
+</code></pre>
+</div>
+<div style="background-color:#98fc92">  
+<h3>Wireless HC12 modules <a name="hc12"></a></h3>
+<p>Enable serial comunication with:</p>
+<pre><code>sudo raspi-config
+</code></pre>
+<p>Check serial port:</p>
+<pre><code>dmesg | grep tty
+</code></pre>
+<p>Script example with HC12 comunication:</p>
+<pre><code>hc12_E.py
+hc12_R.py
+</code></pre>
+</div>
+</body></html>
