@@ -7,6 +7,7 @@
 <li><a href="#markdowneditor">Markdown Editor</a></li>
 <li><a href="#hc12">Wireless HC12 Modules</a></li>
 <li><a href="#qmk">QMK Keyboard Config</a></li>
+<li><a href="#qmkermopad">QMK Keyboard Real Case (ermopad)</a></li>
 </ul>
 <div style="background-color:#98fc92">  
 <h3>7&quot; LCD HDMI display setup <a name="lcdhdmisetup"></a></h3>
@@ -104,5 +105,103 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 <li>Con el .hex generado en qmk_firmware/, falta abrir la app de teensy con ./teensy, cargar el .hex y flashearlo.</li>
 <li>Listo.</li>
 </ol>
+</div>
+<div style="background-color:#98fc92">  
+<h3>QMK Keyboard Real Case (ermopad) <a name="qmkermopad"></a></h3>
+<ul>
+<li>QMK software</li>
+<li>Arduino Pro Micro (ATmega 32U4)</li>
+<li>Keyboard matrix 5x3</li>
+</ul>
+<ol>
+<li>Creación de nuevo teclado con:</li>
+</ol>
+<pre><code>qmk new-keyboard
+</code></pre>
+<p>Seguimos el asistente.
+En <em>layout</em> elegimos el 51 (none of the above) y en <em>controller</em> elegimos el 24 (atmega32u4).</p>
+<ol start="2">
+<li>En la carpeta creada del teclado nuevo, accedemos al <code>info.json</code>.<br />
+En <em>keyboard_name</em> introducimos la ruta relativa a la carpeta (?); p.ej. <code>keyboards/ermopad</code>. El <em>bootloader</em> lo cambiamos a <code>caterina</code>.<br />
+Actualizamos a lo correspondiente el <em>matrix_pins</em>, en este caso ponemos:</li>
+</ol>
+<pre><code>    &quot;matrix_pins&quot;: {
+        &quot;cols&quot;: [&quot;E6&quot;, &quot;B4&quot;, &quot;B5&quot;],
+        &quot;rows&quot;: [&quot;D1&quot;, &quot;D0&quot;, &quot;D4&quot;, &quot;C6&quot;, &quot;D7&quot;]
+    },
+</code></pre>
+<p>Por último en este paso, actualizamos el nombre del <em>layout</em> y su estructura. En este caso tendríamos lo siguiente:</p>
+<pre><code>&quot;layouts&quot;: {
+        &quot;LAYOUT_ortho_5x3&quot;: {
+            &quot;layout&quot;: [
+                { &quot;matrix&quot;: [0, 0], &quot;x&quot;: 0, &quot;y&quot;: 0 },
+                { &quot;matrix&quot;: [0, 1], &quot;x&quot;: 1, &quot;y&quot;: 0 },
+                { &quot;matrix&quot;: [0, 2], &quot;x&quot;: 2, &quot;y&quot;: 0 },
+                { &quot;matrix&quot;: [1, 0], &quot;x&quot;: 0, &quot;y&quot;: 1 },
+                { &quot;matrix&quot;: [1, 1], &quot;x&quot;: 1, &quot;y&quot;: 1 },
+                { &quot;matrix&quot;: [1, 2], &quot;x&quot;: 2, &quot;y&quot;: 1 },
+                { &quot;matrix&quot;: [2, 0], &quot;x&quot;: 0, &quot;y&quot;: 2 },
+                { &quot;matrix&quot;: [2, 1], &quot;x&quot;: 1, &quot;y&quot;: 2 },
+                { &quot;matrix&quot;: [2, 2], &quot;x&quot;: 2, &quot;y&quot;: 2 },
+                { &quot;matrix&quot;: [3, 0], &quot;x&quot;: 0, &quot;y&quot;: 3 },
+                { &quot;matrix&quot;: [3, 1], &quot;x&quot;: 1, &quot;y&quot;: 3 },
+                { &quot;matrix&quot;: [3, 2], &quot;x&quot;: 2, &quot;y&quot;: 3 },
+                { &quot;matrix&quot;: [4, 0], &quot;x&quot;: 0, &quot;y&quot;: 4 },
+                { &quot;matrix&quot;: [4, 1], &quot;x&quot;: 1, &quot;y&quot;: 4 },
+                { &quot;matrix&quot;: [4, 2], &quot;x&quot;: 2, &quot;y&quot;: 4 }
+            ]
+        }
+    }
+</code></pre>
+<ol start="3">
+<li>Abrimos <code>keymap.c</code>dentro de `keymaps/default/.<br />
+Actualizamos los valores que vienen por defecto a los correspondientes. Las capas del teclado se especifican en la creación del <em>layout</em> con &quot;[nº capa]&quot;; a continuación debemos referirnos al teclado con el mismo nombre que le dimos en el paso anterior, en este caso <em>LAYOUT_ortho_5x3</em>. Como resultado tenemos:</li>
+</ol>
+<pre><code>#include QMK_KEYBOARD_H
+
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+    /*
+     * ┌───┬───┬───┬───┐
+     * │ 7 │ 8 │ 9 │ / │
+     * ├───┼───┼───┼───┤
+     * │ 4 │ 5 │ 6 │ * │
+     * ├───┼───┼───┼───┤
+     * │ 1 │ 2 │ 3 │ - │
+     * ├───┼───┼───┼───┤
+     * │ 0 │ . │Ent│ + │
+     * └───┴───┴───┴───┘
+     */
+    [0] = LAYOUT_ortho_5x3(
+        KC_P1,   KC_P2,   KC_P3,
+        KC_P4,   KC_P5,   KC_P6,
+        KC_P7,   KC_P8,   KC_P9,
+        KC_P0,   KC_UP,   MO(1),
+        KC_LEFT, KC_DOWN, KC_RIGHT
+    ),
+    [1] = LAYOUT_ortho_5x3(
+    	KC_NO,   KC_NO,   KC_NO,
+    	KC_NO,   KC_NO,   KC_NO,
+    	KC_NO,   KC_NO,   KC_NO,
+    	KC_NO,   KC_ENT,  KC_NO,
+    	KC_NO,   KC_BSPC, KC_NO
+    )
+};
+</code></pre>
+<p>Los nombres de las teclas se pueden encontrar en <a href="./aditional_docs/qmk_key_reference.md">./aditional_docs/qmk_key_reference.md</a>.</p>
+<ol start="4">
+<li>Compilamos el teclado con:
+Se debe especificar la ruta a la carpeta donde se encuentra el teclado en el argumento <em>-kb</em>, en este caso <code>ermopad</code>. Por defecto usaremos el keymap <code>default</code>, que se especifica en el argument <em>-kb</em>.</li>
+</ol>
+<pre><code>qmk compile -kb ermopad -km default
+</code></pre>
+<ol start="5">
+<li>Por último conectamos el arduino Pro Micro al pc. Ejecutamos el comando <em>make</em> con la especificación del teclado seguido de <em>:avrdude</em>. Un ejemplo sería <code>make keebio/bdn9:default:avrdude</code>. En nuestro caso es lo siguiente:</li>
+</ol>
+<pre><code>make ermopad:default:avrdude
+</code></pre>
+<p>El asistente nos pedirá que pongamos el dispositivo en modo dfu (Device Firmware Update), así que unimos los pones <strong>GND</strong> y <strong>RST</strong> del arduino. Esto lo pondrá en <em>dfu mode</em>. El asistente debería continuar y flashear el código, finalizando así el proceso.</p>
+<blockquote>
+<p><strong><em>NOTA:</em></strong> El paso 4 probablemente no sea necesario. Se añadió por documentar la opción de generar un <code>.hex</code>.</p>
+</blockquote>
 </div>
 </body></html>
