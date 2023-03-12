@@ -6,6 +6,7 @@
 - [Markdown Editor](#markdowneditor)
 - [Wireless HC12 Modules](#hc12)
 - [QMK Keyboard Config](#qmk)
+- [QMK Keyboard Real Case (ermopad)](#qmkermopad)
   
   
 <div style="background-color:#98fc92">  
@@ -80,7 +81,6 @@ hc12_E.py
 hc12_R.py
 ```
 </div>
-
 <div style="background-color:#92a4fc">  
 
 ### QMK keyboard config <a name="qmk"></a>
@@ -123,4 +123,102 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 7) En qmk_firmware/ ejecutamos qmk compile -kb ccprfinal -km default
 8) Con el .hex generado en qmk_firmware/, falta abrir la app de teensy con ./teensy, cargar el .hex y flashearlo.
 9) Listo.
+</div>
+<div style="background-color:#98fc92">  
+
+### QMK Keyboard Real Case (ermopad) <a name="qmkermopad"></a>
+- QMK software
+- Arduino Pro Micro (ATmega 32U4)
+- Keyboard matrix 5x3
+
+1) Creación de nuevo teclado con:
+```
+qmk new-keyboard
+```
+Seguimos el asistente.
+En _layout_ elegimos el 51 (none of the above) y en _controller_ elegimos el 24 (atmega32u4).
+
+2) En la carpeta creada del teclado nuevo, accedemos al `info.json`.  
+En _keyboard_name_ introducimos la ruta relativa a la carpeta (?); p.ej. `keyboards/ermopad`. El _bootloader_ lo cambiamos a `caterina`.  
+Actualizamos a lo correspondiente el _matrix_pins_, en este caso ponemos:
+```
+    "matrix_pins": {
+        "cols": ["E6", "B4", "B5"],
+        "rows": ["D1", "D0", "D4", "C6", "D7"]
+    },
+```
+Por último en este paso, actualizamos el nombre del _layout_ y su estructura. En este caso tendríamos lo siguiente:
+```
+"layouts": {
+        "LAYOUT_ortho_5x3": {
+            "layout": [
+                { "matrix": [0, 0], "x": 0, "y": 0 },
+                { "matrix": [0, 1], "x": 1, "y": 0 },
+                { "matrix": [0, 2], "x": 2, "y": 0 },
+                { "matrix": [1, 0], "x": 0, "y": 1 },
+                { "matrix": [1, 1], "x": 1, "y": 1 },
+                { "matrix": [1, 2], "x": 2, "y": 1 },
+                { "matrix": [2, 0], "x": 0, "y": 2 },
+                { "matrix": [2, 1], "x": 1, "y": 2 },
+                { "matrix": [2, 2], "x": 2, "y": 2 },
+                { "matrix": [3, 0], "x": 0, "y": 3 },
+                { "matrix": [3, 1], "x": 1, "y": 3 },
+                { "matrix": [3, 2], "x": 2, "y": 3 },
+                { "matrix": [4, 0], "x": 0, "y": 4 },
+                { "matrix": [4, 1], "x": 1, "y": 4 },
+                { "matrix": [4, 2], "x": 2, "y": 4 }
+            ]
+        }
+    }
+```
+3) Abrimos `keymap.c`dentro de `keymaps/default/.  
+Actualizamos los valores que vienen por defecto a los correspondientes. Las capas del teclado se especifican en la creación del _layout_ con "[nº capa]"; a continuación debemos referirnos al teclado con el mismo nombre que le dimos en el paso anterior, en este caso _LAYOUT_ortho_5x3_. Como resultado tenemos:  
+
+```
+#include QMK_KEYBOARD_H
+
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+    /*
+     * ┌───┬───┬───┬───┐
+     * │ 7 │ 8 │ 9 │ / │
+     * ├───┼───┼───┼───┤
+     * │ 4 │ 5 │ 6 │ * │
+     * ├───┼───┼───┼───┤
+     * │ 1 │ 2 │ 3 │ - │
+     * ├───┼───┼───┼───┤
+     * │ 0 │ . │Ent│ + │
+     * └───┴───┴───┴───┘
+     */
+    [0] = LAYOUT_ortho_5x3(
+        KC_P1,   KC_P2,   KC_P3,
+        KC_P4,   KC_P5,   KC_P6,
+        KC_P7,   KC_P8,   KC_P9,
+        KC_P0,   KC_UP,   MO(1),
+        KC_LEFT, KC_DOWN, KC_RIGHT
+    ),
+    [1] = LAYOUT_ortho_5x3(
+    	KC_NO,   KC_NO,   KC_NO,
+    	KC_NO,   KC_NO,   KC_NO,
+    	KC_NO,   KC_NO,   KC_NO,
+    	KC_NO,   KC_ENT,  KC_NO,
+    	KC_NO,   KC_BSPC, KC_NO
+    )
+};
+```
+Los nombres de las teclas se pueden encontrar en [./aditional_docs/qmk_key_reference.md](./aditional_docs/qmk_key_reference.md).
+
+4) Compilamos el teclado con:
+Se debe especificar la ruta a la carpeta donde se encuentra el teclado en el argumento _-kb_, en este caso `ermopad`. Por defecto usaremos el keymap `default`, que se especifica en el argument _-kb_.
+```
+qmk compile -kb ermopad -km default
+```
+
+5) Por último conectamos el arduino Pro Micro al pc. Ejecutamos el comando _make_ con la especificación del teclado seguido de _:avrdude_. Un ejemplo sería `make keebio/bdn9:default:avrdude`. En nuestro caso es lo siguiente:
+```
+make ermopad:default:avrdude
+```
+El asistente nos pedirá que pongamos el dispositivo en modo dfu (Device Firmware Update), así que unimos los pones **GND** y **RST** del arduino. Esto lo pondrá en _dfu mode_. El asistente debería continuar y flashear el código, finalizando así el proceso.
+> **_NOTA:_** El paso 4 probablemente no sea necesario. Se añadió por documentar la opción de generar un `.hex`.
+
+
 </div>
