@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-HOST = '192.168.1.106'
+HOST = 'localhost'
 PORT = 3000
 
 

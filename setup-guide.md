@@ -171,7 +171,7 @@ Por último en este paso, actualizamos el nombre del _layout_ y su estructura. E
         }
     }
 ```
-3) Abrimos `keymap.c`dentro de `keymaps/default/.  
+3) Abrimos `keymap.c dentro de `keymaps/default/.  
 Actualizamos los valores que vienen por defecto a los correspondientes. Las capas del teclado se especifican en la creación del _layout_ con "[nº capa]"; a continuación debemos referirnos al teclado con el mismo nombre que le dimos en el paso anterior, en este caso _LAYOUT_ortho_5x3_. Como resultado tenemos:  
 
 ```
@@ -213,7 +213,7 @@ Se debe especificar la ruta a la carpeta donde se encuentra el teclado en el arg
 qmk compile -kb ermopad -km default
 ```
 
-5) Por último conectamos el arduino Pro Micro al pc. Ejecutamos el comando _make_ con la especificación del teclado seguido de _:avrdude_. Un ejemplo sería `make keebio/bdn9:default:avrdude`. En nuestro caso es lo siguiente:
+5) Por último conectamos el arduino Pro Micro al pc y nos aseguramos de estar dentro de la carpeta _qmk_firmware_. Ejecutamos el comando _make_ con la especificación del teclado seguido de _:avrdude_. Un ejemplo sería `make keebio/bdn9:default:avrdude`. En nuestro caso es lo siguiente:
 ```
 make ermopad:default:avrdude
 ```
